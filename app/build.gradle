@@ -1,13 +1,15 @@
-apply plugin: 'com.android.library'
+apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
     namespace 'cafe.adriel.chroma'
     compileSdk 36
     defaultConfig {
+        applicationId 'cafe.adriel.chroma'
         minSdk 30
         targetSdk 36
-        consumerProguardFiles 'proguard-rules.pro'
+        versionCode 15
+        versionName '1.1.5'
         buildConfigField 'String', 'VERSION_NAME', '"1.1.5"'
         buildConfigField 'int', 'VERSION_CODE', '15'
         buildConfigField 'Boolean', 'RELEASE', 'false'

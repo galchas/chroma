@@ -8,12 +8,13 @@ import org.koin.core.parameter.parametersOf
 
 class TunerActivity : AppCompatActivity() {
 
-    private val viewModel by viewModel<TunerViewModel> { parametersOf(this) }
+    private val tunerViewModel: TunerViewModel by viewModel { parametersOf(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val view = TunerAndroidView(this)
-        view.viewModel = viewModel
+        // Explicitly set the ViewModel so the view renders immediately
+        view.viewModel = tunerViewModel
         setContentView(view)
         keepScreenOn()
     }

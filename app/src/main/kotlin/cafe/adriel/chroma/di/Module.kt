@@ -1,14 +1,13 @@
 package cafe.adriel.chroma.di
 
 import android.app.Application
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import cafe.adriel.chroma.manager.MessagingManager
 import cafe.adriel.chroma.manager.PermissionManager
 import cafe.adriel.chroma.manager.SettingsManager
 import cafe.adriel.chroma.manager.TunerManager
-import cafe.adriel.chroma.view.tuner.TunerActivity
-import cafe.adriel.chroma.view.tuner.TunerScreen
 import cafe.adriel.chroma.view.tuner.TunerViewModel
 import cafe.adriel.satchel.Satchel
 import cafe.adriel.satchel.storer.file.FileSatchelStorer
@@ -20,19 +19,19 @@ import org.koin.dsl.module
 val appModule = module {
 
     // Activity-bound components using parameters
-    factory { (activity: TunerActivity) ->
+    factory { (activity: AppCompatActivity) ->
         PermissionManager(
             activity = activity
         )
     }
 
-    factory { (activity: TunerActivity) ->
+    factory { (activity: AppCompatActivity) ->
         MessagingManager(
             context = activity
         )
     }
 
-    factory { (activity: TunerActivity) ->
+    factory { (activity: AppCompatActivity) ->
         TunerManager(
             settingsManager = get(),
             permissionManager = get(parameters = { org.koin.core.parameter.parametersOf(activity) }),
@@ -41,7 +40,7 @@ val appModule = module {
     }
 
     // ViewModel that wires activity-bound dependencies via parameters
-    viewModel { (activity: TunerActivity) ->
+    viewModel { (activity: AppCompatActivity) ->
         TunerViewModel(
             tunerManager = get(parameters = { org.koin.core.parameter.parametersOf(activity) }),
             settingsManager = get(),
