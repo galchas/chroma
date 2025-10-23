@@ -16,6 +16,6 @@ enum class PitchDetectionAlgorithmOption(
     DYWA(R.string.pitch_detection_algorithm_dywa, PitchEstimationAlgorithm.DYNAMIC_WAVELET);
 
     companion object {
-        const val titleRes = R.string.pitch_detection_algorithm
+        @StringRes val titleRes = R.string.pitch_detection_algorithm
     }
 }

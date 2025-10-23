@@ -3,7 +3,6 @@ package cafe.adriel.chroma.di
 import android.app.Application
 import androidx.lifecycle.ProcessLifecycleOwner
 import androidx.lifecycle.lifecycleScope
-import cafe.adriel.chroma.manager.BillingManager
 import cafe.adriel.chroma.manager.MessagingManager
 import cafe.adriel.chroma.manager.PermissionManager
 import cafe.adriel.chroma.manager.SettingsManager
@@ -13,7 +12,6 @@ import cafe.adriel.chroma.view.tuner.TunerScreen
 import cafe.adriel.chroma.view.tuner.TunerViewModel
 import cafe.adriel.satchel.Satchel
 import cafe.adriel.satchel.storer.file.FileSatchelStorer
-import com.github.stephenvinouze.core.managers.KinAppManager
 import java.io.File
 import kotlinx.coroutines.CoroutineScope
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -21,52 +19,38 @@ import org.koin.dsl.module
 
 val appModule = module {
 
-    scope<TunerActivity> {
-        viewModel {
-            TunerViewModel(
-                tunerManager = get(),
-                settingsManager = get(),
-                permissionManager = get(),
-                billingManager = get(),
-                messagingManager = get()
-            )
-        }
-
-        scoped {
-            TunerScreen(
-                viewModel = get()
-            )
-        }
-
-        scoped {
-            BillingManager(
-                activity = getSource<TunerActivity>(),
-                messagingManager = get(),
-                kin = get(),
-                scope = getSource<TunerActivity>().lifecycleScope
-            )
-        }
-
-        scoped {
-            TunerManager(
-                settingsManager = get(),
-                permissionManager = get(),
-                lifecycleOwner = getSource<TunerActivity>()
-            )
-        }
-
-        scoped {
-            PermissionManager(
-                activity = getSource<TunerActivity>()
-            )
-        }
-
-        scoped {
-            MessagingManager(
-                context = getSource<TunerActivity>()
-            )
-        }
+    // Activity-bound components using parameters
+    factory { (activity: TunerActivity) ->
+        PermissionManager(
+            activity = activity
+        )
     }
+
+    factory { (activity: TunerActivity) ->
+        MessagingManager(
+            context = activity
+        )
+    }
+
+    factory { (activity: TunerActivity) ->
+        TunerManager(
+            settingsManager = get(),
+            permissionManager = get(parameters = { org.koin.core.parameter.parametersOf(activity) }),
+            lifecycleOwner = activity
+        )
+    }
+
+    // ViewModel that wires activity-bound dependencies via parameters
+    viewModel { (activity: TunerActivity) ->
+        TunerViewModel(
+            tunerManager = get(parameters = { org.koin.core.parameter.parametersOf(activity) }),
+            settingsManager = get(),
+            permissionManager = get(parameters = { org.koin.core.parameter.parametersOf(activity) }),
+            messagingManager = get(parameters = { org.koin.core.parameter.parametersOf(activity) })
+        )
+    }
+
+    // UI wrapper class can be created directly where needed; no DI binding required
 
     single {
         SettingsManager(
@@ -80,13 +64,6 @@ val appModule = module {
             storer = FileSatchelStorer(
                 file = File(get<Application>().filesDir, "settings.storage")
             )
-        )
-    }
-
-    single {
-        KinAppManager(
-            context = get<Application>(),
-            developerPayload = ""
         )
     }
 

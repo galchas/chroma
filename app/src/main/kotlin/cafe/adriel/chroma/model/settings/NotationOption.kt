@@ -11,6 +11,6 @@ enum class NotationOption(
     DO_RE_MI(R.string.notation_do_re_mi);
 
     companion object {
-        const val titleRes = R.string.notation
+        @StringRes val titleRes = R.string.notation
     }
 }

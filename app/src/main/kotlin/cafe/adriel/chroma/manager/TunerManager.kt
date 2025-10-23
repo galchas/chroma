@@ -67,6 +67,7 @@ class TunerManager(
             when (event) {
                 Lifecycle.Event.ON_START -> startListener(settingsManager.settings)
                 Lifecycle.Event.ON_STOP -> stopListener()
+                else -> Unit
             }
         }
     }

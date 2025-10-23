@@ -13,6 +13,6 @@ enum class AccidentalOption(
     FLAT(R.string.accidental_flat, R.drawable.ic_flat);
 
     companion object {
-        const val titleRes = R.string.accidental
+        @StringRes val titleRes = R.string.accidental
     }
 }

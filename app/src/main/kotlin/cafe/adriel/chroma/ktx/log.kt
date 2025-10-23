@@ -1,6 +1,6 @@
 package cafe.adriel.chroma.ktx
 
-import com.google.firebase.crashlytics.FirebaseCrashlytics
+import android.util.Log
 
 fun logError(error: Throwable) =
-    FirebaseCrashlytics.getInstance().recordException(error)
+    Log.e("Chroma", "Unhandled error", error)

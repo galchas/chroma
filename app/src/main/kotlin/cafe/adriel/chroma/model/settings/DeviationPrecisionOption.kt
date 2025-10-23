@@ -16,6 +16,6 @@ enum class DeviationPrecisionOption(
     Five(R.string.deviation_precision_5, 5);
 
     companion object {
-        const val titleRes = R.string.precision
+        @StringRes val titleRes = R.string.precision
     }
 }

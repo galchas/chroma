@@ -6,7 +6,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import cafe.adriel.chroma.ktx.hasPermission
-import com.markodevcic.peko.Peko
+import androidx.core.app.ActivityCompat
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
@@ -27,14 +27,15 @@ class PermissionManager(
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
         when (event) {
             Lifecycle.Event.ON_RESUME -> updateState()
+            else -> Unit
         }
     }
 
     suspend fun requestPermissions() {
         runCatching {
-            Peko.requestPermissionsAsync(activity, Manifest.permission.RECORD_AUDIO)
-            updateState()
-        }
+            ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.RECORD_AUDIO), 1001)
+        }.onFailure { /* ignore */ }
+        // state will be refreshed on resume
     }
 
     private fun updateState() {

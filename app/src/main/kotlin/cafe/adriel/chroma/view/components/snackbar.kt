@@ -16,6 +16,7 @@ fun RequestPermissionSnackbar(state: SnackbarHostState, onActionClicked: () -> U
     LaunchedEffect(state) {
         when (state.showSnackbar(message, action, SnackbarDuration.Indefinite)) {
             SnackbarResult.ActionPerformed -> onActionClicked()
+            SnackbarResult.Dismissed -> Unit
         }
     }
 }
@@ -25,6 +26,7 @@ fun MessageSnackbar(message: String, state: SnackbarHostState, onDismissed: () -
     LaunchedEffect(state) {
         when (state.showSnackbar(message, duration = SnackbarDuration.Short)) {
             SnackbarResult.Dismissed -> onDismissed()
+            SnackbarResult.ActionPerformed -> Unit
         }
     }
 }

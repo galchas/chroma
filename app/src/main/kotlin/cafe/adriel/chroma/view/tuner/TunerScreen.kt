@@ -17,7 +17,6 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FreeBreakfast
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
@@ -53,7 +52,6 @@ import cafe.adriel.chroma.model.tuner.TuningDeviationResult
 import cafe.adriel.chroma.view.ComposableScreen
 import cafe.adriel.chroma.view.components.AboutDialog
 import cafe.adriel.chroma.view.components.ActionPreference
-import cafe.adriel.chroma.view.components.DonateDialog
 import cafe.adriel.chroma.view.components.MessageSnackbar
 import cafe.adriel.chroma.view.components.RequestPermissionSnackbar
 import cafe.adriel.chroma.view.components.SelectPreference
@@ -71,16 +69,20 @@ class TunerScreen(
     @Composable
     override fun Content() {
         val screenState by viewModel.state.collectAsState()
-        val scaffoldState = rememberBackdropScaffoldState(BackdropValue.Revealed)
-        val scope = rememberCoroutineScope()
+        val scaffoldState = androidx.compose.material.rememberScaffoldState()
         val context = LocalContext.current
+        val (showSettingsDialog, setShowSettingsDialog) = remember { mutableStateOf(false) }
 
         ChromaTheme {
-            BackdropScaffold(
-                appBar = {
-                    TunerTopBar(onSettingsClicked = { scaffoldState.toggle(scope) })
+            androidx.compose.material.Scaffold(
+                topBar = {
+                    TunerTopBar(onSettingsClicked = { setShowSettingsDialog(true) })
                 },
-                backLayerContent = {
+                scaffoldState = scaffoldState
+            ) { paddingValues ->
+                androidx.compose.foundation.layout.Box(modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)) {
                     TunerContent(screenState.tuning, screenState.settings)
 
                     if (screenState.hasRequiredPermissions.not()) {
@@ -90,13 +92,22 @@ class TunerScreen(
                     screenState.message?.let { message ->
                         MessageSnackbar(message, scaffoldState.snackbarHostState, viewModel::consumeMessage)
                     }
-                },
-                frontLayerContent = {
-                    TunerSettings(screenState.settings, screenState.isBillingSupported)
-                },
-                headerHeight = Dp.Hairline,
-                scaffoldState = scaffoldState
-            )
+                }
+            }
+
+            if (showSettingsDialog) {
+                androidx.compose.material.AlertDialog(
+                    onDismissRequest = { setShowSettingsDialog(false) },
+                    text = {
+                        TunerSettings(screenState.settings)
+                    },
+                    confirmButton = {
+                        androidx.compose.material.TextButton(onClick = { setShowSettingsDialog(false) }) {
+                            androidx.compose.material.Text(text = stringResource(android.R.string.ok))
+                        }
+                    }
+                )
+            }
         }
     }
 
@@ -104,12 +115,7 @@ class TunerScreen(
     private fun TunerTopBar(onSettingsClicked: () -> Unit) =
         TopAppBar(
             title = {
-                Image(
-                    painter = painterResource(R.drawable.img_logo),
-                    contentDescription = "Chroma logo",
-                    colorFilter = ColorFilter.tint(MaterialTheme.colors.secondary),
-                    modifier = Modifier.size(width = 100.dp, height = 48.dp)
-                )
+
             },
             actions = {
                 IconButton(
@@ -170,9 +176,8 @@ class TunerScreen(
         }
 
     @Composable
-    private fun TunerSettings(settings: Settings, isBillingSupported: Boolean) {
+    private fun TunerSettings(settings: Settings) {
         val (showAboutDialog, setAboutDialogVisible) = remember { mutableStateOf(false) }
-        val (showDonateDialog, setDonateDialogVisible) = remember { mutableStateOf(false) }
         val context = LocalContext.current
 
         LazyColumn {
@@ -235,13 +240,6 @@ class TunerScreen(
                     icon = Icons.Default.Person,
                     onClick = { setAboutDialogVisible(true) }
                 )
-                if (isBillingSupported) {
-                    ActionPreference(
-                        title = stringResource(R.string.buy_me_coffee),
-                        icon = Icons.Default.FreeBreakfast,
-                        onClick = { setDonateDialogVisible(true) }
-                    )
-                }
                 ActionPreference(
                     title = stringResource(R.string.share),
                     icon = Icons.Default.Share,
@@ -260,13 +258,6 @@ class TunerScreen(
 
         if (showAboutDialog) {
             AboutDialog(onClose = { setAboutDialogVisible(false) })
-        }
-
-        if (showDonateDialog) {
-            DonateDialog(
-                onDonate = viewModel::donate,
-                onClose = { setDonateDialogVisible(false) }
-            )
         }
     }
 }

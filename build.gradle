@@ -1,20 +1,19 @@
 buildscript {
-    ext.kotlin_version = '1.5.30'
-    ext.koin_version = '2.2.3'
-    ext.compose_version = '1.1.0-alpha03'
+    ext.kotlin_version = '1.9.24'
+    ext.koin_version = '3.5.6'
+    ext.compose_version = '1.6.8'
     repositories {
         google()
         mavenCentral()
         gradlePluginPortal()
         maven { url 'https://plugins.gradle.org/m2/' }
+        maven { url 'https://jitpack.io' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.0.2'
-        classpath "com.google.gms:google-services:4.3.10"
-        classpath 'com.google.firebase:firebase-crashlytics-gradle:2.7.1'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        classpath 'com.github.ben-manes:gradle-versions-plugin:0.39.0'
-        classpath 'org.jlleitschuh.gradle:ktlint-gradle:10.1.0'
+        classpath 'com.android.tools.build:gradle:8.13.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.24"
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.50.0'
+        classpath 'org.jlleitschuh.gradle:ktlint-gradle:12.1.1'
     }
 }
 
@@ -28,11 +27,10 @@ allprojects {
         maven { url 'https://jitpack.io' }
     }
     ktlint {
-        version = "0.42.0"
-        android = true
+        version = "1.2.1"
     }
 }
 
-task clean(type: Delete) {
+tasks.register('clean', Delete) {
     delete rootProject.buildDir
 }
