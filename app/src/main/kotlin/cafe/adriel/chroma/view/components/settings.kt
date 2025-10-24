@@ -33,9 +33,6 @@ import cafe.adriel.chroma.view.theme.ChromaColors
 interface SelectOption<T : Enum<T>> {
 
     val labelRes: Int
-
-    val type: T
-        get() = this as T
 }
 
 private enum class SelectionOptionPosition(val startPadding: Dp, val endPadding: Dp) {
