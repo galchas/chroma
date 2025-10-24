@@ -1,18 +1,17 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'maven-publish'
 
 android {
     namespace 'cafe.adriel.chroma'
     compileSdk 36
     defaultConfig {
-        applicationId 'cafe.adriel.chroma'
         minSdk 30
         targetSdk 36
-        versionCode 15
-        versionName '1.1.5'
         buildConfigField 'String', 'VERSION_NAME', '"1.1.5"'
         buildConfigField 'int', 'VERSION_CODE', '15'
         buildConfigField 'Boolean', 'RELEASE', 'false'
+        consumerProguardFiles 'consumer-rules.pro'
     }
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin/'
@@ -34,6 +33,21 @@ android {
     packagingOptions {
         resources {
             excludes += ['META-INF/*']
+        }
+    }
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                artifactId = 'chroma'
+                pom {
+                    name = 'Chroma'
+                    description = 'Android tuner UI/View and components'
+                }
+            }
         }
     }
 }
